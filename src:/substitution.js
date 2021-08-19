@@ -1,34 +1,82 @@
-// Please refrain from tampering with the setup code provided here,
-// as the index.html and test files rely on this setup to work properly.
-// Only add code (e.g., helper methods, variables, etc.) within the scope
-// of the anonymous function on line 6
-
 const substitutionModule = (function () {
   // you can add any code you want within this function scope
-  
+
   function substitution(input, alphabet, encode = true) {
-    // your solution code here
-    //returns false if there is no substitution alphabet, the alphabet length is not exactly 26 
-    //characters long, or it does not contain unique characters.
-    if (!alphabet || alphabet.length !== 26 || alphabet.toLowerCase().split('').sort().join('').match(/(.)\1+/g)){
-      return false;
+    
+    //Check to make sure that the alphabet parameter is valid
+    //Was an alphabet parameter passed through?
+    if (!alphabet) { return false }
+    
+    //Is the alphabet parameter exactly twenty-six characters long?
+    if (alphabet.length !== 26) { return false }
+    
+    //Is every entry in the alphabet parameter unique?
+    for(let i = 0; i < alphabet.length; i++) {
+      for(let j = i + 1; j < alphabet.length; j++) { 
+        if (alphabet[i] == alphabet[j]) return false;
+      }
     }
+    
+    //Make the input lowerCase and create output to return
+    let newInput = input.toLowerCase();
+    let output = [];
 
-    const abc = 'abcdefghijklmnopqrstuvwxyz';
-
-    //returns encoded or decoded message based on the value of encode parameter (boolean) and substitutes
-    //the letter corresponding with the index of the 'abc' variable or the letter of the alphabet parameter
-    //with the corresponding index of the 'abc' variable. 
-    return encode
-    ? input.toLowerCase().replace(/[a-z]/g, (letter) => alphabet[abc.indexOf(letter)])
-    : input.toLowerCase().replace(/[a-z!-\/:-@[-`{-~]/g, 
-    (letter) => abc[alphabet.indexOf(letter)])
+    //Create the variables & constants encoding/decoding
+    const keys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h','i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's','t','u','v', 'w', 'x', 'y', 'z'] ;
+    let alphabetArray = alphabet.split('');
+    let encodeCipher = {};
+    let decodeCipher = {};
+  
+    //Encode or Decode based on encode parameter.
+    if (encode) {
+      //Build the cipher for encoding
+      for (let i = 0; i < alphabetArray.length; i++) {
+      
+        keys.forEach((key, i) => encodeCipher[key] = alphabet[i]);
+    
+      }
+      console.log(encodeCipher);
+      
+      //For the length of the given message...
+      for (let i = 0; i < newInput.length; i++) {
+        let newChar = newInput[i];
+        if (newChar.match(/[a-z]/i)) {
+          newChar = encodeCipher[newChar];
+          output.push(newChar);
+        } else {
+          //If it's not in the encodeCipher, push newChar as is.
+          output.push(newChar);
+        }
+      }
+      return output.join("");
+   } else {
+      //Build the cipher for decoding
+      for (let i = 0; i < alphabetArray.length; i++) {
+      
+        alphabetArray.forEach((key, i) => decodeCipher[key] = keys[i]);
+    
+      }
+     
+     //For the length of the given message...
+     for (let i = 0; i < newInput.length; i++) {
+       //Check the current character given in the message
+       let newChar = newInput[i];
+       //Check if the character is in the cipherAlphabet
+       if(newChar in decodeCipher) {
+         newChar = decodeCipher[newChar];
+         output.push(newChar);
+       } else {
+         //If it's not in the decodeCipher, push newChar as is.
+         output.push(newChar);
+       }
+     }
+     return output.join("");
+   }
   }
 
   return {
     substitution,
   };
 })();
-
 
 module.exports = { substitution: substitutionModule.substitution };
